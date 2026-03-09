@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="text-align: center; padding: 4rem 1rem;">
+    <h1 style="font-size: 3rem; margin-bottom: 1rem;">
+        <span class="text-accent">ClaimWatch</span> AI
+    </h1>
+    <p class="text-muted" style="font-size: 1.2rem; max-width: 600px; margin: 0 auto 2rem;">
+        AI-Powered Insurance Fraud Detection. Analyze claims in real-time using
+        advanced machine learning models to identify suspicious patterns.
+    </p>
+    <div class="flex gap-4" style="justify-content: center; flex-wrap: wrap;">
+        <a href="{{ url_for('submit') }}" class="btn">Submit a Claim</a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline">View Dashboard</a>
+    </div>
+</div>
+
+<div class="metrics-grid" style="margin-top: 2rem;">
+    <div class="glass-panel metric-card">
+        <div class="metric-label">AI Models Active</div>
+        <div class="metric-value text-accent">3</div>
+        <div class="text-muted" style="font-size: 0.85rem;">Random Forest, XGBoost, Decision Tree</div>
+    </div>
+    <div class="glass-panel metric-card">
+        <div class="metric-label">Detection Accuracy</div>
+        <div class="metric-value text-success">95%+</div>
+        <div class="text-muted" style="font-size: 0.85rem;">Across all models</div>
+    </div>
+    <div class="glass-panel metric-card">
+        <div class="metric-label">Real-Time Analysis</div>
+        <div class="metric-value">< 1s</div>
+        <div class="text-muted" style="font-size: 0.85rem;">Instant fraud scoring</div>
+    </div>
+    <div class="glass-panel metric-card">
+        <div class="metric-label">Data Points</div>
+        <div class="metric-value text-warning">6</div>
+        <div class="text-muted" style="font-size: 0.85rem;">Features analyzed per claim</div>
+    </div>
+</div>
+
+<div class="glass-panel" style="margin-top: 2rem;">
+    <h3 class="mb-4">How It Works</h3>
+    <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div style="text-align: center; padding: 1rem;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📝</div>
+            <h4>1. Submit Claim</h4>
+            <p class="text-muted" style="font-size: 0.9rem;">Enter claim details including amount, severity, and customer info.</p>
+        </div>
+        <div style="text-align: center; padding: 1rem;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🤖</div>
+            <h4>2. AI Analysis</h4>
+            <p class="text-muted" style="font-size: 0.9rem;">Our ML models analyze patterns and score the fraud risk.</p>
+        </div>
+        <div style="text-align: center; padding: 1rem;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛡️</div>
+            <h4>3. Get Results</h4>
+            <p class="text-muted" style="font-size: 0.9rem;">Receive instant fraud risk assessment with actionable recommendations.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="glass-panel">
+        <h2 class="mb-1">Submit New Claim</h2>
+        <p class="text-muted mb-4">Enter claim details below for AI fraud detection analysis.</p>
+
+        <form id="claimForm">
+            <div class="grid">
+                <div class="form-group">
+                    <label>Claim Amount ($)</label>
+                    <input type="number" id="claimAmount" placeholder="e.g., 5000" required>
+                </div>
+                <div class="form-group">
+                    <label>Customer Age</label>
+                    <input type="number" id="customerAge" placeholder="e.g., 35" required>
+                </div>
+                <div class="form-group">
+                    <label>Months as Customer</label>
+                    <input type="number" id="monthsCustomer" placeholder="12" required>
+                </div>
+                <div class="form-group">
+                    <label>Previous Claims</label>
+                    <input type="number" id="prevClaims" placeholder="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Policy Deductible</label>
+                    <select id="deductible" required>
+                        <option value="500">$500</option>
+                        <option value="1000">$1000</option>
+                        <option value="1500">$1500</option>
+                        <option value="2000">$2000</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Incident Severity</label>
+                    <select id="severity" required>
+                        <option value="1">1 - Minor</option>
+                        <option value="2">2 - Moderate</option>
+                        <option value="3">3 - Major</option>
+                        <option value="4">4 - Severe</option>
+                    </select>
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Fraud Detection Model</label>
+                    <select id="modelChoice">
+                        <option value="RandomForest">Random Forest (Default)</option>
+                        <option value="XGBoost">XGBoost (High Accuracy)</option>
+                        <option value="DecisionTree">Decision Tree (High Interpretability)</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn mt-2" style="width: 100%;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                Analyze Risk &amp; Submit Claim
+            </button>
+        </form>
+
+        <div id="resultBox" class="mt-4"
+            style="display: none; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.2);">
+            <div class="flex items-center gap-4 mb-2">
+                <div id="riskScore" style="font-size: 3rem; font-weight: 700;">--%</div>
+                <div>
+                    <h3 id="resultLabel" style="margin-bottom: 0.25rem;">Analysis Complete</h3>
+                    <p class="text-muted" style="margin: 0; font-size: 0.9rem;">Fraud Risk Score</p>
+                </div>
+            </div>
+            <p id="resultMessage" style="margin-top: 1rem;"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('claimForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = 'Analyzing...';
+        btn.disabled = true;
+
+        const payload = {
+            claim_amount: document.getElementById('claimAmount').value,
+            customer_age: document.getElementById('customerAge').value,
+            months_as_customer: document.getElementById('monthsCustomer').value,
+            previous_claims: document.getElementById('prevClaims').value,
+            policy_deductable: document.getElementById('deductible').value,
+            incident_severity: document.getElementById('severity').value,
+            model: document.getElementById('modelChoice').value
+        };
+
+        try {
+            const response = await fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+
+            const resultBox = document.getElementById('resultBox');
+            const riskScore = document.getElementById('riskScore');
+            const resultLabel = document.getElementById('resultLabel');
+            const resultMessage = document.getElementById('resultMessage');
+
+            resultBox.style.display = 'block';
+            riskScore.textContent = data.fraud_risk_score + '%';
+
+            if (data.is_fraudulent) {
+                riskScore.className = 'text-danger';
+                resultLabel.textContent = 'High Risk - Investigation Required';
+                resultLabel.className = 'text-danger';
+                resultBox.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                resultBox.style.background = 'rgba(239, 68, 68, 0.05)';
+                resultMessage.innerHTML = `Model <strong>${data.model_used}</strong> flagged this claim as highly suspicious based on historical patterns. Recommended action: Manual review team and SIU referral.`;
+            } else {
+                riskScore.className = 'text-success';
+                resultLabel.textContent = 'Low Risk - Genuine Claim';
+                resultLabel.className = 'text-success';
+                resultBox.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                resultBox.style.background = 'rgba(16, 185, 129, 0.05)';
+                resultMessage.innerHTML = `Model <strong>${data.model_used}</strong> indicates normal patterns. Safe to proceed with standard processing.`;
+            }
+        } catch (err) {
+            alert('Error communicating with AI models. Ensure backend is running.');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    });
+</script>
+{% endblock %}
